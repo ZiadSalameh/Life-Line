@@ -6,6 +6,7 @@ use App\Models\Activity;
 use App\Models\ActivityMethodology;
 use App\Models\ActivityMonitoring;
 use App\Models\BoardDee;
+use App\Models\Cost;
 use App\Models\Meeting;
 use App\Models\Objective;
 use App\Models\Office;
@@ -76,5 +77,6 @@ class DatabaseSeeder extends Seeder
         Task::factory(10)->create();
         TaskStep::factory(10)->create();
         Element::factory(10)->create();
+        Cost::factory(10)->create();
     }
 }

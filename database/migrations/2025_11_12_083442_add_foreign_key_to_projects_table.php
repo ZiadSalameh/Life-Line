@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::table('projects', function (Blueprint $table) {
             $table->foreignId('board_dee_id')->constrained('board_dees');
+            $table->string('project_no');
+            $table->unique(['project_no', 'board_dee_id']);
         });
     }
 

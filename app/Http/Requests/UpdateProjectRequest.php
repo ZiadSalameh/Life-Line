@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateProjectRequest extends FormRequest
 {
@@ -23,8 +24,14 @@ class UpdateProjectRequest extends FormRequest
     {
         return [
             'board_dee_id' => 'required|exists:board_dees,id',
-            'project_no' => 'sometimes|string|max:40|unique:projects',
-            'project_name' => 'sometimes|string|max:40|unique:projects',
+            // 'project_no' => 'sometimes|string|max:40|unique:projects',
+            'project_no' =>  [
+                'required',
+                Rule::unique('projects')
+                    ->where('board_dee_id', $this->input('board_dee_id'))
+                    ->ignore($this->route('id'))
+            ],
+            'project_name' => 'sometimes|string|max:40',
             'start_date' => 'date|nullable',
             'end_date' => 'date|nullable',
             'real_start_date' => 'date|nullable',

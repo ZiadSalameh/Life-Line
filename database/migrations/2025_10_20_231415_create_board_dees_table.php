@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('board_dees', function (Blueprint $table) {
             $table->id();
-            $table->integer('board_no')->unique();
+            $table->integer('board_no');
             $table->date('boar_dee_date')->nullable();
             $table->string('description')->nullable();
             $table->string('voted')->nullable();
             $table->foreignId('meeting_id')->constrained('meetings')->cascadeOnDelete();
+            $table->unique(['board_no', 'meeting_id']);
             $table->timestamps();
         });
     }

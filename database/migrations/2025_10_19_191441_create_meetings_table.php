@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('meetings', function (Blueprint $table) {
             $table->id();
-            $table->string('meeting_no')->unique();
+            $table->string('meeting_no');
             $table->Date('DateTime')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
+            $table->unique('meeting_no','meeting_id');
         });
     }
 

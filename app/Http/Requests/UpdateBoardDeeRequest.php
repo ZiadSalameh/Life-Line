@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateBoardDeeRequest extends FormRequest
 {
@@ -23,7 +24,8 @@ class UpdateBoardDeeRequest extends FormRequest
     {
         return [
             'boar_dee_date' => 'nullable|date',
-            'board_no' => 'sometimes|integer|unique:board_dees,board_no', // must add unique
+            // 'board_no' => 'sometimes|integer|unique:board_dees,board_no', // must add unique
+            'board_no' => ['sometimes', Rule::unique('board_no')->where('meeting_id', $this->input('meeting_id'))->ignore($this->route('id'))],
             'description' => 'nullable|string',
             'voted' => 'nullable|string',
             'meeting_id' => 'sometimes|integer|exists:meetings,id'

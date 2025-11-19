@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreMeetingRequest extends FormRequest
 {
@@ -22,7 +23,8 @@ class StoreMeetingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'meeting_no' => 'required|string|unique:meetings,meeting_no',
+            // 'meeting_no' => 'required|string|unique:meetings,meeting_no',
+            'meeting_no' => ['required', Rule::unique('meeting_no')->where('meeting_id', $this->input('meeting_id'))],
             'description' => 'nullable|string',
             'DateTime' => 'nullable|date'   
         ];

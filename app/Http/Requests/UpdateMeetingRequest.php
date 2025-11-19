@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateMeetingRequest extends FormRequest
 {
@@ -22,12 +23,14 @@ class UpdateMeetingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'meeting_no'=>'sometimes|string|unique:meetings,meeting_no',
+            // 'meeting_no'=>'sometimes|string|unique:meetings,meeting_no',
+            'meeting_no' => ['required', Rule::unique('meeting_no')->where('meeting_id', $this->input('meeting_id'))->ignore($this->route('id'))],
             'description' => 'nullable|string',
-            'DateTime'=>'nullable|date'
+            'DateTime' => 'nullable|date'
         ];
     }
-    public function messages(){
+    public function messages()
+    {
         return [
             'meeting_no.unique' => 'The meeting number must be unique.',
             'description.string' => 'Description must be a string',

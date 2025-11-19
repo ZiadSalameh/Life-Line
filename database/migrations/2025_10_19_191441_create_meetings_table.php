@@ -17,7 +17,7 @@ return new class extends Migration
             $table->Date('DateTime')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
-            $table->unique('meeting_no','meeting_id');
+            $table->unique('meeting_no','id');
         });
     }
 

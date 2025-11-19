@@ -54,12 +54,12 @@ class MeetingController extends Controller
     {
         try {
             $meeting = Meeting::findOrFail($id);
-            $existdata = Meeting::where('meeting_no', $request->meeting_no)->exists();
-            if ($existdata) {
-                return response()->json([
-                    'message' => 'Meeting already exists'
-                ], 422);
-            }
+            // $existdata = Meeting::where('meeting_no', $request->meeting_no)->exists();
+            // if ($existdata) {
+            //     return response()->json([
+            //         'message' => 'Meeting already exists'
+            //     ], 422);
+            // }
             $meeting->update($request->validated());
             return response()->json([
                 'message' => 'Meeting updated successfully',

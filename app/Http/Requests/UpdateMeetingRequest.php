@@ -24,7 +24,7 @@ class UpdateMeetingRequest extends FormRequest
     {
         return [
             // 'meeting_no'=>'sometimes|string|unique:meetings,meeting_no',
-            'meeting_no' => ['required', Rule::unique('meeting_no')->where('meeting_id', $this->input('meeting_id'))->ignore($this->route('id'))],
+            'meeting_no' => ['sometimes', Rule::unique('meetings')->where('id', $this->input('id'))->ignore($this->route('id'))],
             'description' => 'nullable|string',
             'DateTime' => 'nullable|date'
         ];

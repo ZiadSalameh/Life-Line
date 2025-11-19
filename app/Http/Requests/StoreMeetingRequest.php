@@ -24,7 +24,7 @@ class StoreMeetingRequest extends FormRequest
     {
         return [
             // 'meeting_no' => 'required|string|unique:meetings,meeting_no',
-            'meeting_no' => ['required', Rule::unique('meeting_no')->where('meeting_id', $this->input('meeting_id'))],
+            'meeting_no' => ['required', Rule::unique('meetings')->where('id', $this->input('id'))],
             'description' => 'nullable|string',
             'DateTime' => 'nullable|date'   
         ];

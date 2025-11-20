@@ -72,6 +72,7 @@ Route::middleware([IsAdmin::class])->group(function () {
     //// user
     Route::get('getallusers', [UserController::class, 'GetAllUsers']);
     Route::get('getuser/{id}', [UserController::class, 'GetUser']);
+    
 
     //// meeting
     Route::get('GetAllMeetings', [MeetingController::class, 'GetAllMettings']);

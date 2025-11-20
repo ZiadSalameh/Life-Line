@@ -29,13 +29,13 @@ class TaskController extends Controller
         if ($existdate) {
             return response()->json([
                 'message' => 'Task exist alreday for this project ',
-                'task' => $existdate
+                'tasks' => $existdate
             ], 409);
         }
         $task = Task::create($validateData);
         return response()->json([
             'message' => 'Task added successfully',
-            'task' => new TaskResource($task)
+            'tasks' => new TaskResource($task)
         ], 201);
     }
 
@@ -50,13 +50,13 @@ class TaskController extends Controller
             if ($existdate) {
                 return response()->json([
                     'message' => 'Task exist alreday for this project ',
-                    'task' => $existdate
+                    'tasks' => $existdate
                 ], 409);
             }
             $task->update($validateData);
             return response()->json([
                 'message' => 'Task updated successfully',
-                'task' => new TaskResource($task)
+                'tasks' => new TaskResource($task)
             ], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
@@ -72,7 +72,7 @@ class TaskController extends Controller
             $task = Task::with('project')->findOrFail($id);
             return response()->json([
                 'message' => 'Task found',
-                'task' => new TaskResource($task)
+                'tasks' => new TaskResource($task)
             ], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
@@ -89,7 +89,7 @@ class TaskController extends Controller
             $task->delete();
             return response()->json([
                 'message' => 'Task deleted successfully',
-                'task' => new TaskResource($task)
+                'tasks' => new TaskResource($task)
             ], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
@@ -111,7 +111,7 @@ class TaskController extends Controller
 
             return response()->json([
                 'message' => 'Tasks retrieved successfully',
-                'boards' => TaskResource::collection($project->tasks)
+                'tasks' => TaskResource::collection($project->tasks)
             ], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([

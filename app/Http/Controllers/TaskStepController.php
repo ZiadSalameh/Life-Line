@@ -28,13 +28,13 @@ class TaskStepController extends Controller
         if ($existTaskstep) {
             return response()->json([
                 'mesaage' => 'this step alreday exist for this Task',
-                'task step' => $existTaskstep
+                'tasksteps' => $existTaskstep
             ], 409);
         }
         $taskStep = TaskStep::create($validatedData);
         return response()->json([
             'message' => 'Task Step Added Successfully',
-            'task step' => new TaskStepResource($taskStep)
+            'tasksteps' => new TaskStepResource($taskStep)
         ], 201);
     }
 
@@ -45,7 +45,7 @@ class TaskStepController extends Controller
         $taskStep->update($validatedData);
         return response()->json([
             'message' => 'Task Step Updated Successfully',
-            'task step' => new TaskStepResource($taskStep)
+            'tasksteps' => new TaskStepResource($taskStep)
         ], 200);
     }
 
@@ -55,12 +55,12 @@ class TaskStepController extends Controller
             $taskStep = TaskStep::with('task')->findOrFail($id);
             return response()->json([
                 'message' => 'Task Step Found',
-                'task step' => new TaskStepResource($taskStep)
+                'tasksteps' => new TaskStepResource($taskStep)
             ], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'Task Step Not Found',
-                'task step' => $e
+                'tasksteps' => $e
             ], 404);
         }
     }
@@ -72,12 +72,12 @@ class TaskStepController extends Controller
             $taskStep->delete();
             return response()->json([
                 'message' => 'Task Step Deleted Successfully',
-                'task step' => new TaskStepResource($taskStep)
+                'tasksteps' => new TaskStepResource($taskStep)
             ], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'Task Step Not Found',
-                'task step' => $e
+                'tasksteps' => $e
             ], 404);
         }
     }
@@ -95,7 +95,7 @@ class TaskStepController extends Controller
 
             return response()->json([
                 'message' => 'Task Steps retrieved successfully',
-                'Task Steps' => TaskStepResource::collection($task->tasksteps)
+                'tasksteps' => TaskStepResource::collection($task->tasksteps)
             ], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([

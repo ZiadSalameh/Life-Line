@@ -61,46 +61,46 @@ Route::middleware(['auth:sanctum', 'CheckUserRole:admin'])->group(function () {
     Route::get('getuser/{id}', [UserController::class, 'GetUser']);
 
     //// meeting
-    Route::get('meetings', [MeetingController::class, 'GetAllMettings']);
-    Route::get('meetings/{id}', [MeetingController::class, 'GetMeeting']);
-    Route::post('meetings', [MeetingController::class, 'AddMeeting']);
-    Route::put('meetings/{id}', [MeetingController::class, 'UpdateMeeting']);
-    Route::delete('meetings/{id}', [MeetingController::class, 'DeleteMeeting']);
+    Route::get('GetAllMeetings', [MeetingController::class, 'GetAllMettings']);
+    Route::get('GetByIdMeeting/{id}', [MeetingController::class, 'GetMeeting']);
+    Route::post('AddMeeting', [MeetingController::class, 'AddMeeting']);
+    Route::put('UpdateMeeting/{id}', [MeetingController::class, 'UpdateMeeting']);
+    Route::delete('DeleteMeeting/{id}', [MeetingController::class, 'DeleteMeeting']);
     Route::post('meetings/{id}/add-user', [MeetingController::class, 'addUser']);
     Route::post('meetings/{id}/remove-user', [MeetingController::class, 'removeUser']);
     // Route::get('getAllboardDees/{id}', [MeetingController::class, 'GetAllboardDees']);
 
     //// Board Dee
-    Route::get('boarddees', [BoardDeeController::class, 'GetAllboard']);
-    Route::post('boarddees', [BoardDeeController::class, 'AddBoard']);
-    Route::get('boarddees/{id}', [BoardDeeController::class, 'GetBoard']);
-    Route::put('boarddees/{id}', [BoardDeeController::class, 'UpdateBoard']);
-    Route::delete('boarddees/{id}', [BoardDeeController::class, 'DeleteBoard']);
-        Route::get('getAllboardDees/{id}', [BoardDeeController::class, 'GetAllboardDees']);
+    Route::get('GetAll', [BoardDeeController::class, 'GetAllboard']);
+    Route::post('Add', [BoardDeeController::class, 'AddBoard']);
+    Route::get('GetById/{id}', [BoardDeeController::class, 'GetBoard']);
+    Route::put('Edit/{id}', [BoardDeeController::class, 'UpdateBoard']);
+    Route::delete('Delete/{id}', [BoardDeeController::class, 'DeleteBoard']);
+        Route::get('GetAllByMeeting/{id}', [BoardDeeController::class, 'GetAllboardDees']);
 
 
     //// Project
-    Route::get('projects', [ProjectController::class, 'GetallProject']);
-    Route::post('porjects', [ProjectController::class, 'AddProject']);
-    Route::put('porjects/{id}', [ProjectController::class, 'updateProjectInBoard']);
-    Route::get('porjects/{id}', [ProjectController::class, 'GetProject']);
-    Route::delete('porjects/{id}', [ProjectController::class, 'DeleteProject']);
+    Route::get('GetAllProject', [ProjectController::class, 'GetallProject']);
+    Route::post('AddProject', [ProjectController::class, 'AddProject']);
+    Route::put('EditProject/{id}', [ProjectController::class, 'updateProjectInBoard']);
+    Route::get('GetByIdProject/{id}', [ProjectController::class, 'GetProject']);
+    Route::delete('DeleteProject/{id}', [ProjectController::class, 'DeleteProject']);
 
     //// Task
-    Route::get('tasks', [TaskController::class, 'GetAllTasks']);
-    Route::post('tasks', [TaskController::class, 'AddTask']);
-    Route::get('tasks/{id}', [TaskController::class, 'GetTask']);
-    Route::put('tasks/{id}', [TaskController::class, 'UpdateTask']);
-    Route::delete('tasks/{id}', [TaskController::class, 'DeleteTask']);
-    Route::get('GetAllTasksProject/{id}/', [TaskController::class, 'GetAllTasksProject']);
+    Route::get('GetAllTask', [TaskController::class, 'GetAllTasks']);
+    Route::post('AddTask', [TaskController::class, 'AddTask']);
+    Route::get('GetByIdTask/{id}', [TaskController::class, 'GetTask']);
+    Route::put('UpdateTask/{id}', [TaskController::class, 'UpdateTask']);
+    Route::delete('DeleteTask/{id}', [TaskController::class, 'DeleteTask']);
+    Route::get('GetAllProjectTasks/{id}/', [TaskController::class, 'GetAllTasksProject']);
 
     //// Tasks Steps
-    Route::get('tasksteps', [TaskStepController::class, 'GetAllTaskSteps']);
-    Route::post('tasksteps', [TaskStepController::class, 'AddTaskStep']);
-    Route::get('tasksteps/{id}', [TaskStepController::class, 'GetTaskStep']);
-    Route::put('tasksteps/{id}', [TaskStepController::class, 'UpdateTaskStep']);
-    Route::delete('tasksteps/{id}', [TaskStepController::class, 'DeleteTaskStep']);
-    Route::get('GetAllTasksStepProject/{id}',[TaskStepController::class,'GetAllTasksStepProject']);
+    Route::get('GetAllTaskStep', [TaskStepController::class, 'GetAllTaskSteps']);
+    Route::post('AddTaskStep', [TaskStepController::class, 'AddTaskStep']);
+    Route::get('GetByIdTaskStep/{id}', [TaskStepController::class, 'GetTaskStep']);
+    Route::put('UpdateTaskStep/{id}', [TaskStepController::class, 'UpdateTaskStep']);
+    Route::delete('DeleteTaskStep/{id}', [TaskStepController::class, 'DeleteTaskStep']);
+    Route::get('GetAllTasksStepTask/{id}',[TaskStepController::class,'GetAllTasksStepProject']);
 
 
     //Element

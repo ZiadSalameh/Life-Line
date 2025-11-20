@@ -17,18 +17,21 @@ use App\Http\Controllers\ProjectProposalController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskStepController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\IsAdmin;
+use App\Http\Middleware\IsUserAuth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-
 //User
+// Route::post('register', [UserController::class, 'register']);
+// Route::post('login', [UserController::class, 'login']);
+// Route::post('logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
+
+
+// public routes
 Route::post('register', [UserController::class, 'register']);
 Route::post('login', [UserController::class, 'login']);
-Route::post('logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
-
+Route::post('logout', [UserController::class, 'logout'])->middleware(IsUserAuth::class);
 
 
 
@@ -53,8 +56,18 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
+
+// // User 
+// Route::middleware([IsUserAuth::class])->group(function(){
+
+
+// });
+
+
+
+
 //Admin
-Route::middleware(['auth:sanctum', 'CheckUserRole:admin'])->group(function () {
+Route::middleware([IsAdmin::class])->group(function () {
 
     //// user
     Route::get('getallusers', [UserController::class, 'GetAllUsers']);

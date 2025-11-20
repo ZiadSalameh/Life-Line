@@ -2,98 +2,96 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\UserResource;
-use App\Models\Project;
-use App\Models\Task;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\JWT;
 
 class UserController extends Controller
 {
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email',
-            'password' => 'required|string|min:8|confirmed'
-        ]);
+
+        $validatedData = $request->validated();
         $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'name' => $validatedData['name'],
+            'role' => $validatedData['role'] ?? 'user',
+            'email' => $validatedData['email'],
+            'password' => bcrypt($validatedData['password']),
         ]);
 
-        $token = $user->createToken('auth_Token')->plainTextToken;
+        JWTAuth::factory()->setTTL(30);
 
-        return response()->json(
-            [
-                'message' => 'User Registered Successuflly',
-                'User' => $user,
-                "token" => $token
-            ],
-            201
-        );
-    }
-
-
-    public function login(Request $request)
-    {
-        $request->validate([
-
-            // 'email'=>'required|string|email',
-            'email' => 'required|string|email|exists:users',
-            'password' => 'required|string|min:8'
+        $token = JWTAuth::attempt([
+            'email' => $validatedData['email'],
+            'password' => $validatedData['password']
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password')))
-            return response()->json(['message' => 'Invalid Email Or Password'], 401);
+        return response()->json([
+            'message' => 'User registered successfully',
+            'user' => $user,
+            'token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => JWTAuth::factory()->getTTL() * 60
+        ], 201);
+    }
 
-        $user = User::where('email', $request->email)->firstOrFail();
-        $token = $user->createToken('auth_Token')->plainTextToken;
-        return response()->json(
-            [
-                // 'error' => ['email' => ['The provider credentails are incorrect']],
-                'message' => 'User Login Successuflly',
-                'User' => new UserResource($user),
-                'token' => $token
-            ],
-            200
-        );
-    }
-    public function logout(Request $request)
+    public function login(LoginRequest $request)
     {
-        $request->user()->currentAccessToken()->delete();
-        return response()->json(
-            [
-                'message' => 'User Logout Successuflly'
-            ],
-            200
-        );
+
+        $validatedData = $request->validated();
+        $credentials = [
+            'email' => $validatedData['email'],
+            'password' => $validatedData['password']
+        ];
+        try {
+
+            JWTAuth::factory()->setTTL(30);
+            if (!$token = Auth::attempt($credentials)) {
+                return response()->json([
+                    'message' => 'Invalid credentials',
+                ], 401);
+            }
+            return response()->json([
+                'message' => 'User logged in successfully',
+                'user' => Auth::user(),
+                'token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => JWTAuth::factory()->getTTL() * 60
+            ], 200);
+        } catch (JWTException $e) {
+            return response()->json([
+                'message' => 'Could not create token',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
-    
-    
-    public function GetUser($id){
-     try{
-        $user = User::with('office')->findOrFail($id);
+
+    public function getuser($id)
+    {
+        $user = User::findOrFail($id);
         return response()->json([
-            'date' => new UserResource($user)
-        ],200);
-     }
-     catch(ModelNotFoundException $e){
-        return response()->json([
-            'message' => 'User not found',
-            'error' => $e->getMessage()
-        ], 404);
-     }
+            'user' => $user,
+        ], 200);
     }
-     public function GetAllUsers(){
-      $userData = User::with('office')->get();
-      return  UserResource::collection($userData);
+    public function getallusers()
+    {
+        $users = User::all();
+        return response()->json([
+            'users' => $users,
+        ], 200);
+    }
+
+    public function logout()
+    {
+        JWTAuth::invalidate(JWTAuth::getToken());
+        return response()->json([
+            'message' => 'User logged out successfully',
+        ], 200);
     }
 }

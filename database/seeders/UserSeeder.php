@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
             'office_id'=> null,
             'first_name'=>'root',
             'last_name'=>'root',
-            'email'=>'root@sweidalifeline.org',
+            'email'=>'root@mail.com',
             'password'=>'123456789',
             'role'=>'admin'
         ]);

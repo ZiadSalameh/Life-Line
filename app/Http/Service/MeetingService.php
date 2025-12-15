@@ -58,20 +58,6 @@ class MeetingService
                 'meeting' => null
             ];
         }
-
-        // $exists = Meeting::where('meeting_no', $data['meeting_no'])
-        //     ->where('id', '!=', $id)
-        //     ->exists();
-
-        // if ($exists) {
-        //     return [
-        //         'success' => false,
-        //         'message' => 'Meeting number already exists',
-        //         'status' => 422,
-        //         'meeting' => null
-        //     ];
-        // }
-
         $meeting->update($data);
         return [
             'success' => true,

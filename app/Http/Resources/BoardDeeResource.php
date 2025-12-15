@@ -20,10 +20,8 @@ class BoardDeeResource extends JsonResource
             'boar_dee_date' => $this->boar_dee_date,
             'description' => $this->description,
             'voted' => $this->voted,
-            // 'meeting_id' => $this->meeting_id,
             'created_at' => $this->created_at->format('Y-m-d'),
-            'updated_at' => $this->updated_at->format('Y-m-d'),
-            'meeting' => $this->whenLoaded('meeting',function(){
+            'meeting' => $this->whenLoaded('meeting', function () {
                 return [
                     'id' => $this->meeting->id,
                     'meeting_no' => $this->meeting->meeting_no,

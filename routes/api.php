@@ -72,7 +72,7 @@ Route::middleware([IsAdmin::class])->group(function () {
     //// user
     Route::get('getallusers', [UserController::class, 'GetAllUsers']);
     Route::get('getuser/{id}', [UserController::class, 'GetUser']);
-    
+
 
     //// meeting
     Route::get('GetAllMeetings', [MeetingController::class, 'GetAllMettings']);
@@ -90,7 +90,7 @@ Route::middleware([IsAdmin::class])->group(function () {
     Route::get('GetById/{id}', [BoardDeeController::class, 'GetBoard']);
     Route::put('Edit/{id}', [BoardDeeController::class, 'UpdateBoard']);
     Route::delete('Delete/{id}', [BoardDeeController::class, 'DeleteBoard']);
-        Route::get('GetAllByMeeting/{id}', [BoardDeeController::class, 'GetAllboardDees']);
+    Route::get('GetAllByMeeting/{id}', [BoardDeeController::class, 'GetAllboardDees']);
 
 
     //// Project
@@ -114,7 +114,7 @@ Route::middleware([IsAdmin::class])->group(function () {
     Route::get('GetByIdTaskStep/{id}', [TaskStepController::class, 'GetTaskStep']);
     Route::put('UpdateTaskStep/{id}', [TaskStepController::class, 'UpdateTaskStep']);
     Route::delete('DeleteTaskStep/{id}', [TaskStepController::class, 'DeleteTaskStep']);
-    Route::get('GetAllTasksStepTask/{id}',[TaskStepController::class,'GetAllTasksStepProject']);
+    Route::get('GetAllTasksStepTask/{id}', [TaskStepController::class, 'GetAllTasksStepProject']);
 
 
     //Element

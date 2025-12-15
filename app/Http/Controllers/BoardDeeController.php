@@ -5,35 +5,27 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBoardDeeRequest;
 use App\Http\Requests\UpdateBoardDeeRequest;
 use App\Http\Resources\BoardDeeResource;
-use App\Http\Resources\MeetingResource;
-use App\Models\BoardDee;
-use App\Models\Meeting;
-use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Service\BoardDeeService;
+
+
 
 class BoardDeeController extends Controller
 {
+    private BoardDeeService $boardDeeService;
+    public function __construct(BoardDeeService $boardDeeService)
+    {
+        $this->boardDeeService = $boardDeeService;
+    }
     public function GetAllboard()
     {
-      
-        $boards = BoardDee::with('meeting')->get();
+        $boards = $this->boardDeeService->getAllBoardDees();
         return BoardDeeResource::collection($boards);
     }
-
 
     public function AddBoard(StoreBoardDeeRequest $request)
     {
         $vailedated = $request->validated();
-        $existdata = BoardDee::where('meeting_id', $vailedated['meeting_id'])->where('board_no', $vailedated['board_no'])->exists();
-        if ($existdata) {
-            return response()->json([
-                'message' => 'BoardDee already exists',
-                'error' => 'BoardDee already exists',
-            ], 400);
-        }
-        $boardDee = BoardDee::create($vailedated);
+        $boardDee = $this->boardDeeService->AddBoardDee($vailedated);
         return response()->json([
             'message' => 'BoardDee created successfully',
             'data' => new BoardDeeResource($boardDee)
@@ -42,76 +34,47 @@ class BoardDeeController extends Controller
 
     public function GetBoard($id)
     {
-        try {
-            $boardDee = BoardDee::with('meeting')->findOrFail($id);
-            return new BoardDeeResource($boardDee);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'message' => 'Not found',
-                'error' => $e->getMessage(),
-            ], 404);
-        }
+        $boardDee = $this->boardDeeService->getBoardDeeById($id);
+        return response()->json([
+            'message' => $boardDee['message'],
+            'boardDee' => $boardDee['success']
+                ? new BoardDeeResource($boardDee['boardDee'])
+                : null
+        ], $boardDee['status']);
     }
 
     public function UpdateBoard(UpdateBoardDeeRequest $request, $id)
     {
-        try{
-            $boardDee = BoardDee::findOrFail($id);
-            $vailedated = $request->validated();
-            $boardDee->update($vailedated);
-            return response()->json([
-                'message' => 'BoardDee updated successfully',
-                'data' => new BoardDeeResource($boardDee)
-            ], 200);
-        }catch(ModelNotFoundException $e){
-            return response()->json([
-                'message' => 'Not found',
-                'error' => $e->getMessage(),
-            ], 404);
-        }
+        $boardDee = $this->boardDeeService->UpdateBoardDee($request->validated(), $id);
+        return response()->json([
+            'message' => $boardDee['message'],
+            'boardDee' => $boardDee['success']
+                ? new BoardDeeResource($boardDee['boardDee'])
+                : null
+        ], $boardDee['status']);
     }
 
 
 
     public function DeleteBoard($id)
     {
-       try{
-        $boardDee = BoardDee::with('meeting')->findOrFail($id);
-        $boardDee->delete();
+        $boardDee = $this->boardDeeService->DeleteBoardDee($id);
         return response()->json([
-            'message' => 'BoardDee deleted successfully',
-            'data' => new BoardDeeResource($boardDee)
-        ], 200);
-       }catch(ModelNotFoundException $e){
-        return response()->json([
-            'message' => 'Not found',
-            'error' => $e->getMessage(),
-        ], 404);
-       }
+            'message' => $boardDee['message'],
+            'boardDee' => $boardDee['success']
+                ? new BoardDeeResource($boardDee['boardDee'])
+                : null
+        ], $boardDee['status']);
     }
 
-     public function GetAllboardDees($id)
+    public function GetAllboardDees($id)
     {
-        try {
-            $meeting = Meeting::with('boardDees')->findOrFail($id);
-            if ($meeting->boardDees->isEmpty()) {
-                return response()->json([
-                    'message' => 'No board dees found for this meeting'
-                ], 404);
-            }
-            return response()->json([
-                'message' => 'Board dees retrieved successfully',
-                'boards' => BoardDeeResource::collection($meeting->boardDees)
-            ], 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'message' => 'Meeting not found'
-            ], 404);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'An error occurred while processing your request',
-                'error' => config('app.debug') ? $e->getMessage() : null
-            ], 500);
-        }
+        $boeardDees = $this->boardDeeService->getBoardDeesByMeetingId($id);
+        return response()->json([
+            'message' => $boeardDees['message'],
+            'boardDees' => $boeardDees['success']
+                ? BoardDeeResource::collection($boeardDees['boardDees'])
+                : null
+        ], $boeardDees['status']);
     }
 }

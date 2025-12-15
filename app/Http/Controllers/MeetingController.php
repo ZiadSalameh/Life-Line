@@ -6,83 +6,75 @@ use App\Http\Requests\StoreMeetingRequest;
 use App\Http\Requests\UpdateMeetingRequest;
 use App\Http\Resources\BoardDeeResource;
 use App\Http\Resources\MeetingResource;
+use App\Http\Service\MeetingService;
 use App\Models\BoardDee;
 use App\Models\Meeting;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
+
 class MeetingController extends Controller
 {
-    public function GetAllMettings()
+    private MeetingService $meetingService;
+    public function __construct(MeetingService $meetingService)
     {
-        $meetings = Meeting::with('users')->get();
-        return MeetingResource::collection($meetings);
+        $this->meetingService = $meetingService;
     }
 
-
-
-    public function AddMeeting(StoreMeetingRequest $request)
+    public function GetAllMettings()
     {
-        $validateDate = $request->validated();
-        $existdata = Meeting::where('meeting_no', $validateDate['meeting_no'])->exists();
-        if ($existdata) {
-            return response()->json([
-                'message' => 'Meeting already exists'
-            ], 422);
-        }
-        $meeting = Meeting::create($validateDate);
-
-        return response()->json([
-            'meeting' => new MeetingResource($meeting)
-        ], 201);
+        $meetings = $this->meetingService->getAllMeetings();
+        return MeetingResource::collection($meetings);
     }
 
     public function GetMeeting($id)
     {
-        try {
-            $meeting = Meeting::with('users')->findOrFail($id);
-            return new MeetingResource($meeting);
-        } catch (Exception $e) {
-            return response()->json(['message' => 'Not found'], 404);
-        }
+        $result = $this->meetingService->getMeetingById($id);
+
+        return response()->json([
+            'message' => $result['message'],
+            'meeting' => $result['success']
+                ? new MeetingResource($result['meeting'])
+                : null
+        ], $result['status']);
     }
 
-
+    public function AddMeeting(StoreMeetingRequest $request)
+    {
+        $validateDate = $request->validated();
+        $meeting = $this->meetingService->AddMeeting($validateDate);
+        return response()->json([
+            'meeting' => new MeetingResource($meeting['meeting']),
+            'message' => $meeting['message']
+        ], 201);
+    }
 
     public function UpdateMeeting(UpdateMeetingRequest $request, $id)
     {
-        try {
-            $meeting = Meeting::findOrFail($id);
-            // $existdata = Meeting::where('meeting_no', $request->meeting_no)->exists();
-            // if ($existdata) {
-            //     return response()->json([
-            //         'message' => 'Meeting already exists'
-            //     ], 422);
-            // }
-            $meeting->update($request->validated());
-            return response()->json([
-                'message' => 'Meeting updated successfully',
-                'meeting' => new MeetingResource($meeting)
-            ], 200);
-        } catch (Exception $e) {
-            return response()->json(['message' => 'Not found'], 404);
-        }
+        $result = $this->meetingService->UpdateMeeting(
+            $request->validated(),
+            $id
+        );
+        return response()->json([
+            'message' => $result['message'],
+            'meeting' => $result['success']
+                ? new MeetingResource($result['meeting'])
+                : null
+        ], $result['status']);
     }
 
 
     public function DeleteMeeting($id)
     {
-        try {
-            $meeting = Meeting::findOrFail($id);
-            $meeting->delete();
-            return response()->json(['message' => 'Meeting deleted successfully'], 200);
-        } catch (Exception $e) {
-            return response()->json(['message' => 'Not found'], 404);
-        }
+        $meeting = $this->meetingService->DeleteMeeting($id);
+        return response()->json([
+            'message' => $meeting['message'],
+            'meeting' => $meeting['success']
+                ? new MeetingResource($meeting['meeting'])
+                : null
+        ], $meeting['status']);
     }
-
-
 
     public function addUser(Request $request, $meetingId)
     {
@@ -91,35 +83,15 @@ class MeetingController extends Controller
             'user_ids.*' => 'exists:users,id'
         ]);
 
-        try {
-            $meeting = Meeting::with('users')->findOrFail($meetingId);
+        $result = $this->meetingService->addUsers($meetingId, $request->user_ids);
 
-            $newUserIds = array_diff($request->user_ids, $meeting->users->pluck('id')->toArray());
-
-            if (empty($newUserIds)) {
-                return response()->json([
-                    'message' => 'All users are already assigned to this meeting'
-                ], 409);
-            }
-
-            $meeting->users()->attach($newUserIds);
-
-            return response()->json([
-                'message' => 'Users assigned successfully',
-                'meeting' => new MeetingResource($meeting->load('users'))
-            ], 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'message' => 'Meeting not found'
-            ], 404);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'An error occurred while processing your request',
-                'error' => config('app.debug') ? $e->getMessage() : null
-            ], 500);
-        }
+        return response()->json([
+            'message' => $result['message'],
+            'meeting' => $result['success']
+                ? new MeetingResource($result['meeting'])
+                : null
+        ], $result['status']);
     }
-
 
     public function removeUser(Request $request, $meetingId)
     {
@@ -128,60 +100,13 @@ class MeetingController extends Controller
             'user_ids.*' => 'exists:users,id'
         ]);
 
-        try {
-            $meeting = Meeting::with('users')->findOrFail($meetingId);
+        $result = $this->meetingService->removeUsers($meetingId, $request->user_ids);
 
-            $currentUserIds = $meeting->users->pluck('id')->toArray();
-
-            $existingUserIds = array_intersect($request->user_ids, $currentUserIds);
-
-            if (empty($existingUserIds)) {
-                return response()->json([
-                    'message' => 'None of the selected users are assigned to this meeting'
-                ], 409);
-            }
-
-            $meeting->users()->detach($existingUserIds);
-
-            return response()->json([
-                'message' => 'Users removed successfully',
-                'meeting' => new MeetingResource($meeting->load('users'))
-            ], 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'message' => 'Meeting not found'
-            ], 404);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'An error occurred while processing your request',
-                'error' => config('app.debug') ? $e->getMessage() : null
-            ], 500);
-        }
+        return response()->json([
+            'message' => $result['message'],
+            'meeting' => $result['success']
+                ? new MeetingResource($result['meeting'])
+                : null
+        ], $result['status']);
     }
-
-
-    // public function GetAllboardDees($id)
-    // {
-    //     try {
-    //         $meeting = Meeting::with('boardDees')->findOrFail($id);
-    //         if ($meeting->boardDees->isEmpty()) {
-    //             return response()->json([
-    //                 'message' => 'No board dees found for this meeting'
-    //             ], 404);
-    //         }
-    //         return response()->json([
-    //             'message' => 'Board dees retrieved successfully',
-    //             'boards' => BoardDeeResource::collection($meeting->boardDees)
-    //         ], 200);
-    //     } catch (ModelNotFoundException $e) {
-    //         return response()->json([
-    //             'message' => 'Meeting not found'
-    //         ], 404); 
-    //     } catch (Exception $e) {
-    //         return response()->json([
-    //             'message' => 'An error occurred while processing your request',
-    //             'error' => config('app.debug') ? $e->getMessage() : null
-    //         ], 500);
-    //     }
-    // }
 }

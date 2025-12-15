@@ -19,14 +19,13 @@ class MeetingResource extends JsonResource
             'meeting_no' => $this->meeting_no,
             'description' => $this->description,
             'DateTime' => $this->DateTime,
-            'user_id'=> $this->whenLoaded('users',function(){
-                return $this->users->map(function($user){
+            'user_id' => $this->whenLoaded('users', function () {
+                return $this->users->map(function ($user) {
                     return [
-                        'id'=>$user->id,
-                        'name'=>$user->first_name.' '.$user->last_name,
-                        'email'=>$user->email,
+                        'id' => $user->id,
+                        'name' => $user->first_name . ' ' . $user->last_name,
+                        'email' => $user->email,
                     ];
-
                 });
             })
         ];

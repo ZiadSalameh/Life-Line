@@ -23,8 +23,7 @@ class UpdateMeetingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'meeting_no'=>'sometimes|string|unique:meetings,meeting_no',
-            'meeting_no' => ['sometimes', Rule::unique('meetings')->where('id', $this->input('id'))->ignore($this->route('id'))],
+            'meeting_no' => ['sometimes', Rule::unique('meetings', 'meeting_no')->ignore($this->route('id'))],
             'description' => 'nullable|string',
             'DateTime' => 'nullable|date'
         ];

@@ -23,13 +23,12 @@ class StoreMeetingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'meeting_no' => 'required|string|unique:meetings,meeting_no',
-            'meeting_no' => ['required', Rule::unique('meetings')->where('id', $this->input('id'))],
+            'meeting_no' => 'required|unique:meetings,meeting_no',
             'description' => 'nullable|string',
-            'DateTime' => 'nullable|date'   
+            'DateTime' => 'nullable|date'
         ];
     }
-    
+
     public function messages()
     {
         return [
@@ -39,5 +38,4 @@ class StoreMeetingRequest extends FormRequest
             'DateTime.date' => 'Date must be a date',
         ];
     }
-    
 }

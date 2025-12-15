@@ -4,75 +4,42 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Resources\UserResource;
+use App\Http\Service\UserService;
 use App\Models\User;
-use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\JWT;
 
 class UserController extends Controller
 {
+    private UserService $userService;
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
     public function register(RegisterRequest $request)
     {
-
-        $validatedData = $request->validated();
-        $user = User::create([
-            'first_name' => $validatedData['first_name'],
-            'last_name' => $validatedData['last_name'],
-            'bitrthdate' => $validatedData['bitrthdate'] ?? null,
-            'ScinceGrade' => $validatedData['ScinceGrade'] ?? null,
-            'role' => $validatedData['role'] ?? 'user',
-            'email' => $validatedData['email'],
-            'password' => bcrypt($validatedData['password']),
-        ]);
-
-        JWTAuth::factory()->setTTL(30);
-
-        $token = JWTAuth::attempt([
-            'email' => $validatedData['email'],
-            'password' => $validatedData['password']
-        ]);
+        $user = $this->userService->register($request->validated());
 
         return response()->json([
-            'message' => 'User registered successfully',
-            'user' => $user,
-            'token' => $token,
-            'token_type' => 'bearer',
+            'data' => new UserResource($user['user']),
+            'token' => $user['token'],
             'expires_in' => JWTAuth::factory()->getTTL() * 60
         ], 201);
     }
 
     public function login(LoginRequest $request)
     {
-
-        $validatedData = $request->validated();
-        $credentials = [
-            'email' => $validatedData['email'],
-            'password' => $validatedData['password']
-        ];
-        try {
-
-            JWTAuth::factory()->setTTL(30);
-            if (!$token = Auth::attempt($credentials)) {
-                return response()->json([
-                    'message' => 'Invalid credentials',
-                ], 401);
-            }
+        $user = $this->userService->login($request->validated());
+        if ($user['success'] === false) {
             return response()->json([
-                'message' => 'User logged in successfully',
-                'user' => Auth::user(),
-                'token' => $token,
-                'token_type' => 'bearer',
-                'expires_in' => JWTAuth::factory()->getTTL() * 60
-            ], 200);
-        } catch (JWTException $e) {
-            return response()->json([
-                'message' => 'Could not create token',
-                'error' => $e->getMessage(),
-            ], 500);
+                'message' => $user['message']
+            ], 401);
         }
+        return response()->json([
+            'data' => new UserResource($user['user']),
+            'token' => $user['token'],
+            'expires_in' => JWTAuth::factory()->getTTL() * 60
+        ], 200);
     }
 
     public function getuser($id)

@@ -23,14 +23,11 @@ class ProjectResource extends JsonResource
             'real_start_date' => $this->real_start_date,
             'real_end_date' => $this->real_end_date,
             'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-            'board_dee' => $this->whenLoaded('boardDee',function()
-            {
+            'board_dee' => $this->whenLoaded('boardDee', function () {
                 return [
                     'id' => $this->boardDee->id,
                     'board_no' => $this->boardDee->board_no,
                 ];
-            
             })
         ];
     }

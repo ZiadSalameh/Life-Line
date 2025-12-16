@@ -46,11 +46,6 @@ class UpdateTaskRequest extends FormRequest
     {
         return [
 
-            // 'project_id.required' => 'The project ID is required.',
-            // 'project_id.exists' => 'The project ID does not exist.',
-            // 'task_name.string' => 'The task name must be a string.',
-            // 'task_name.max' => 'The task name must be at most 40 characters.',
-            // 'task_name.unique' => 'The task name must be unique.',
             'project_id.required' => 'The project ID is required.',
             'project_id.exists' => 'The project ID does not exist.',
             'task_name.string' => 'The task name must be a string.',

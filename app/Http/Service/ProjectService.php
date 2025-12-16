@@ -4,7 +4,7 @@ namespace App\Http\Service;
 
 use App\Models\Project;
 
-class ProjectService
+class ProjectService extends BaseService
 {
     public function getAllProject()
     {
@@ -16,19 +16,13 @@ class ProjectService
     {
         $project = Project::with('boardDee')->find($id);
         if (!$project) {
-            return [
-                'success' => false,
-                'message' => 'Project not found',
-                'status' => 404,
-                'project' => null
-            ];
+            return $this->error('Project not found', 404, [
+                'project' => $project
+            ]);
         }
-        return [
-            'success' => true,
-            'message' => 'Project retrieved successfully',
-            'status' => 200,
+        return $this->success([
             'project' => $project
-        ];
+        ], 'Project retrieved successfully', 200);
     }
 
     public function AddProject(array $data): array
@@ -43,53 +37,38 @@ class ProjectService
             'board_dee_id' => $data['board_dee_id']
 
         ]);
-        return [
-            'success' => true,
-            'message' => 'Project created successfully',
-            'status' => 201,
+        return $this->success([
             'project' => $project
-        ];
+        ], 'Project created successfully', 201);
     }
 
     public function UpdateProject(array $data, $id)
     {
         $project = Project::find($id);
         if (!$project) {
-            return [
-                'success' => false,
-                'message' => 'Project not found',
-                'status' => 404,
-                'project' => null
-            ];
+            return $this->error('Project not found', 404, [
+                'project' => $project
+            ]);
         }
 
         $project->update($data);
-        return [
-            'success' => true,
-            'message' => 'Project updated successfully',
-            'status' => 200,
+        return $this->success([
             'project' => $project
-        ];
+        ], 'Project updated successfully', 200);
     }
 
     public function deleteProject($id)
     {
         $project = Project::find($id);
         if (!$project) {
-            return [
-                'success' => false,
-                'message' => 'Project not found',
-                'status' => 404,
-                'project' => null
-            ];
+            return $this->error('Project not found', 404, [
+                'project' => $project
+            ]);
         }
 
         $project->delete();
-        return [
-            'success' => true,
-            'message' => 'Project deleted successfully',
-            'status' => 200,
+        return $this->success([
             'project' => $project
-        ];
+        ], 'Project deleted successfully', 200);
     }
 }

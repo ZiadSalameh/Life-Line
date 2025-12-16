@@ -5,7 +5,7 @@ namespace App\Http\Service;
 use App\Models\Meeting;
 
 
-class MeetingService
+class MeetingService extends BaseService
 {
     public function  getAllMeetings()
     {
@@ -18,20 +18,14 @@ class MeetingService
         $meeting = Meeting::with('users')->find($id);
 
         if (!$meeting) {
-            return [
-                'success' => false,
-                'message' => 'Meeting not found',
-                'status' => 404,
+            return $this->error('Meeting not found', 404, [
                 'meeting' => null
-            ];
+            ]);
         }
 
-        return [
-            'success' => true,
-            'message' => 'Meeting retrieved successfully',
-            'status' => 200,
+        return $this->success([
             'meeting' => $meeting
-        ];
+        ], 'Meeting retrieved successfully', 200);
     }
 
     public function AddMeeting(array $data): array
@@ -41,51 +35,38 @@ class MeetingService
             'description' => $data['description'],
             'DateTime' => $data['DateTime'] ?? null,
         ]);
-        return [
-            'meeting' => $meeting,
-            'message' => 'Meeting created successfully',
-        ];
+        return $this->success([
+            'meeting' => $meeting
+        ], 'Meeting retrieved successfully', 200);
     }
 
     public function UpdateMeeting(array $data, $id)
     {
         $meeting = Meeting::find($id);
         if (!$meeting) {
-            return [
-                'success' => false,
-                'message' => 'Meeting not found',
-                'status' => 404,
+            return $this->error('Meeting not found', 404, [
                 'meeting' => null
-            ];
+            ]);
         }
         $meeting->update($data);
-        return [
-            'success' => true,
-            'message' => 'Meeting updated successfully',
-            'status' => 200,
+        return $this->success([
             'meeting' => $meeting
-        ];
+        ], 'Meeting updated successfully', 200);
     }
 
     public function DeleteMeeting($id)
     {
         $meeting = Meeting::find($id);
         if (!$meeting) {
-            return [
-                'success' => false,
-                'message' => 'Meeting not found',
-                'status' => 404,
+            return $this->error('Meeting not found', 404, [
                 'meeting' => null
-            ];
+            ]);
         }
 
         $meeting->delete();
-        return [
-            'success' => true,
-            'message' => 'Meeting deleted successfully',
-            'status' => 200,
+        return $this->success([
             'meeting' => $meeting
-        ];
+        ], 'Meeting deleted successfully', 200);
     }
 
     public function addUsers(int $meetingId, array $userIds): array
@@ -93,34 +74,25 @@ class MeetingService
         $meeting = Meeting::with('users')->find($meetingId);
 
         if (!$meeting) {
-            return [
-                'success' => false,
-                'message' => 'Meeting not found',
-                'status' => 404,
+            return $this->error('Meeting not found', 404, [
                 'meeting' => null
-            ];
+            ]);
         }
 
         $currentUserIds = $meeting->users->pluck('id')->toArray();
         $newUserIds = array_diff($userIds, $currentUserIds);
 
         if (empty($newUserIds)) {
-            return [
-                'success' => false,
-                'message' => 'All users are already assigned to this meeting',
-                'status' => 409,
+            return $this->error('All users are already assigned to this meeting', 409, [
                 'meeting' => null
-            ];
+            ]);
         }
 
         $meeting->users()->attach($newUserIds);
 
-        return [
-            'success' => true,
-            'message' => 'Users assigned successfully',
-            'status' => 200,
+        return $this->success([
             'meeting' => $meeting->load('users')
-        ];
+        ], 'Users assigned successfully', 200);
     }
 
     public function removeUsers(int $meetingId, array $userIds): array
@@ -128,33 +100,24 @@ class MeetingService
         $meeting = Meeting::with('users')->find($meetingId);
 
         if (!$meeting) {
-            return [
-                'success' => false,
-                'message' => 'Meeting not found',
-                'status' => 404,
+            return $this->error('Meeting not found', 404, [
                 'meeting' => null
-            ];
+            ]);
         }
 
         $currentUserIds = $meeting->users->pluck('id')->toArray();
         $existingUserIds = array_intersect($userIds, $currentUserIds);
 
         if (empty($existingUserIds)) {
-            return [
-                'success' => false,
-                'message' => 'None of the selected users are assigned to this meeting',
-                'status' => 409,
+            return $this->error('None of the selected users are assigned to this meeting', 409, [
                 'meeting' => null
-            ];
+            ]);
         }
 
         $meeting->users()->detach($existingUserIds);
 
-        return [
-            'success' => true,
-            'message' => 'Users removed successfully',
-            'status' => 200,
+        return $this->success([
             'meeting' => $meeting->load('users')
-        ];
+        ], 'Users removed successfully', 200);
     }
 }

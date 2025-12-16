@@ -4,9 +4,8 @@ namespace App\Http\Service;
 
 use App\Models\BoardDee;
 use App\Models\Meeting;
-use Illuminate\Support\Arr;
 
-class BoardDeeService
+class BoardDeeService extends BaseService
 {
     public function getAllBoardDees()
     {
@@ -18,19 +17,13 @@ class BoardDeeService
     {
         $boardDee = BoardDee::with('meeting')->find($id);
         if (!$boardDee) {
-            return [
-                'success' => false,
-                'message' => 'BoardDee not found',
-                'status' => 404,
-                'boardDee' => null
-            ];
+            return $this->error('BoardDee not found', 404, [
+                'boardDee' => $boardDee
+            ]);
         }
-        return [
-            'success' => true,
-            'message' => 'BoardDee retrieved successfully',
-            'status' => 200,
+        return $this->success([
             'boardDee' => $boardDee
-        ];
+        ], 'BoardDee retrieved successfully', 200);
     }
 
     public function AddBoardDee($data)
@@ -43,76 +36,57 @@ class BoardDeeService
             'meeting_id' => $data['meeting_id']
         ]);
 
-        return $boardDee;
+        return $this->success([
+            'boardDee' => $boardDee
+        ], 'BoardDee updated successfully', 201);
     }
 
     public function UpdateBoardDee(array $data, $id)
     {
         $boardDee = BoardDee::find($id);
         if (!$boardDee) {
-            return [
-                'success' => false,
-                'message' => 'BoardDee not found',
-                'status' => 404,
-                'boardDee' => null
-            ];
+            return $this->error('BoardDee not found', 404, [
+                'boardDee' => $boardDee
+            ]);
         }
 
         $boardDee->update($data);
-        return [
-            'success' => true,
-            'message' => 'BoardDee updated successfully',
-            'status'  => 200,
+        return $this->success([
             'boardDee' => $boardDee
-        ];
+        ], 'BoardDee updated successfully', 200);
     }
 
     public function DeleteBoardDee($id)
     {
         $boardDee = BoardDee::find($id);
         if (!$boardDee) {
-            return [
-                'success' => false,
-                'message' => 'BoardDee not found',
-                'status' => 404,
-                'boardDee' => null
-            ];
+            return $this->error('BoardDee not found', 404, [
+                'boardDee' => $boardDee
+            ]);
         }
         $boardDee->delete();
-        return [
-            'success' => true,
-            'message' => 'BoardDee deleted successfully',
-            'status' => 200,
+        return $this->success([
             'boardDee' => $boardDee
-        ];
+        ], 'BoardDee deleted successfully', 200);
     }
 
     public function getBoardDeesByMeetingId($id)
     {
         $meeting = Meeting::with('boardDees')->find($id);
         if (!$meeting) {
-            return [
-                'success' => false,
-                'message' => 'Meeting not found',
-                'status' => 404,
-                'boardDees' => null
-            ];
+            return $this->error('Meeting not found', 404, [
+                'meeting' => $meeting
+            ]);
         }
         if ($meeting->boardDees->isEmpty()) {
-            return [
-                'success' => false,
-                'message' => 'No board dees found for this meeting',
-                'status' => 404,
+            return $this->error('No board dees found for this meeting', 404, [
                 'boardDees' => []
-            ];
+            ]);
         }
 
 
-        return [
-            'success' => true,
-            'message' => 'BoardDees retrieved successfully',
-            'status' => 200,
+        return $this->success([
             'boardDees' => $meeting->boardDees
-        ];
+        ], 'BoardDees retrieved successfully', 200);
     }
 }

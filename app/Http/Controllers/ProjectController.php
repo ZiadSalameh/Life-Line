@@ -27,7 +27,7 @@ class ProjectController extends Controller
         $validatedData = $request->validated();
         $project = $this->projectService->AddProject($validatedData);
         return response()->json([
-            'peoject' => new ProjectResource($project['project']),
+            'project' => new ProjectResource($project['project']),
             'message' => $project['message']
         ], $project['status']);
     }

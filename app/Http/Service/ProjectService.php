@@ -2,9 +2,7 @@
 
 namespace App\Http\Service;
 
-use App\Http\Resources\ProjectResource;
 use App\Models\Project;
-use Ramsey\Collection\Collection;
 
 class ProjectService
 {
@@ -45,14 +43,53 @@ class ProjectService
             'board_dee_id' => $data['board_dee_id']
 
         ]);
-
         return [
             'success' => true,
             'message' => 'Project created successfully',
             'status' => 201,
             'project' => $project
         ];
+    }
 
+    public function UpdateProject(array $data, $id)
+    {
+        $project = Project::find($id);
+        if (!$project) {
+            return [
+                'success' => false,
+                'message' => 'Project not found',
+                'status' => 404,
+                'project' => null
+            ];
+        }
 
+        $project->update($data);
+        return [
+            'success' => true,
+            'message' => 'Project updated successfully',
+            'status' => 200,
+            'project' => $project
+        ];
+    }
+
+    public function deleteProject($id)
+    {
+        $project = Project::find($id);
+        if (!$project) {
+            return [
+                'success' => false,
+                'message' => 'Project not found',
+                'status' => 404,
+                'project' => null
+            ];
+        }
+
+        $project->delete();
+        return [
+            'success' => true,
+            'message' => 'Project deleted successfully',
+            'status' => 200,
+            'project' => $project
+        ];
     }
 }

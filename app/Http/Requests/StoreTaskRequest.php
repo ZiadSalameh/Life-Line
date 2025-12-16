@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreTaskRequest extends FormRequest
 {
@@ -21,17 +22,25 @@ class StoreTaskRequest extends FormRequest
      */
     public function rules(): array
     {
-       return [
+        return [
 
-            'task_name'=>'required|string|max:40',
-            'description'=>'string|nullable',
-            'responsible'=>'string|nullable',
-            'duration'=>'string|nullable',
-            'start_date'=>'date|nullable',
-            'end_date'=>'date|nullable',
-            'real_start_date'=>'date|nullable',
-            'real_end_date'=>'date|nullable',
-            'project_id'=>'required|exists:projects,id',
+            'task_name' => [
+                'required',
+                'string',
+                Rule::unique('tasks')
+                    ->where(
+                        fn($query) =>
+                        $query->where('project_id', $this->project_id)
+                    ),
+            ],
+            'description' => 'string|nullable',
+            'responsible' => 'string|nullable',
+            'duration' => 'string|nullable',
+            'start_date' => 'date|nullable',
+            'end_date' => 'date|nullable',
+            'real_start_date' => 'date|nullable',
+            'real_end_date' => 'date|nullable',
+            'project_id' => 'required|exists:projects,id',
 
         ];
     }
@@ -39,13 +48,13 @@ class StoreTaskRequest extends FormRequest
     public function messages()
     {
         return
-        [
-        'task_name.required' =>' task name required',
-        'task_name.string' =>' task name must be string',
-        'task_name.max' =>'task name must contain just 40 char',
-        'project_id.required' =>' project id required',
-        'project_id.exists' =>' project id not found',
+            [
+                'task_name.required' => ' task name required',
+                'task_name.string' => ' task name must be string',
+                'task_name.unique' => 'task name must be unique',
+                'project_id.required' => ' project id required',
+                'project_id.exists' => ' project id not found',
 
-        ];
+            ];
     }
 }

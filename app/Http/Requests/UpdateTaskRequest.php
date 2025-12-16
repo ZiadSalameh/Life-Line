@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateTaskRequest extends FormRequest
 {
@@ -22,7 +23,14 @@ class UpdateTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'task_name' => 'string|max:40|sometimes',
+            'task_name' => [
+                'sometimes',
+                'string',
+                'max:40',
+                Rule::unique('tasks', 'task_name')
+                    ->where('project_id', $this->project_id)
+                    ->ignore($this->route('id')),
+            ],
             'description' => 'string|nullable',
             'responsible' => 'string|nullable',
             'duration' => 'string|nullable',
@@ -38,11 +46,17 @@ class UpdateTaskRequest extends FormRequest
     {
         return [
 
+            // 'project_id.required' => 'The project ID is required.',
+            // 'project_id.exists' => 'The project ID does not exist.',
+            // 'task_name.string' => 'The task name must be a string.',
+            // 'task_name.max' => 'The task name must be at most 40 characters.',
+            // 'task_name.unique' => 'The task name must be unique.',
             'project_id.required' => 'The project ID is required.',
             'project_id.exists' => 'The project ID does not exist.',
             'task_name.string' => 'The task name must be a string.',
             'task_name.max' => 'The task name must be at most 40 characters.',
-            
+            'task_name.unique' => 'The task name must be unique.',
+
         ];
     }
 }

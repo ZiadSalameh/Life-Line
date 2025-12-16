@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
+use App\Http\Service\TaskService;
 use App\Models\Project;
 use App\Models\Task;
 use Exception;
@@ -14,56 +15,37 @@ use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
+    private TaskService $taskService;
+    public function __construct(TaskService $taskService)
+    {
+        $this->taskService = $taskService;
+    }
 
     public function GetAllTasks()
     {
-        $tasks = Task::with('project')->get();
+        $tasks = $this->taskService->getAllTasks();
         return TaskResource::collection($tasks);
     }
 
     public function AddTask(StoreTaskRequest $request)
     {
         $validateData = $request->validated();
-        $existdate = Task::where('task_name', $validateData['task_name'])
-            ->where('project_id', $validateData['project_id'])->exists();
-        if ($existdate) {
-            return response()->json([
-                'message' => 'Task exist alreday for this project ',
-                'tasks' => $existdate
-            ], 409);
-        }
-        $task = Task::create($validateData);
+        $task = $this->taskService->addTask($validateData);
         return response()->json([
-            'message' => 'Task added successfully',
-            'tasks' => new TaskResource($task)
-        ], 201);
+            'task' => new TaskResource($task['task']),
+            'message' => $task['message']
+        ], $task['status']);
     }
 
 
     public function UpdateTask(UpdateTaskRequest $request, $id)
     {
-        try {
-            $validateData = $request->validated();
-            $task = Task::findOrFail($id);
-            $existdate = Task::where('task_name', $validateData['task_name'])
-                ->where('project_id', $validateData['project_id'])->exists();
-            if ($existdate) {
-                return response()->json([
-                    'message' => 'Task exist alreday for this project ',
-                    'tasks' => $existdate
-                ], 409);
-            }
-            $task->update($validateData);
-            return response()->json([
-                'message' => 'Task updated successfully',
-                'tasks' => new TaskResource($task)
-            ], 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'message' => 'Task not found',
-                'error' => $e->getMessage()
-            ], 404);
-        }
+        $validateData = $request->validated();
+        $task = $this->taskService->updateTask($validateData, $id);
+        return response()->json([
+            'task' => new TaskResource($task['task']),
+            'message' => $task['message']
+        ], $task['status']);
     }
 
     public function GetTask($id)
@@ -101,27 +83,17 @@ class TaskController extends Controller
 
     public function GetAllTasksProject($id)
     {
-        try {
-            $project = Project::with('tasks')->findOrFail($id);
-            if ($project->tasks->isEmpty()) {
-                return response()->json([
-                    'message' => 'No Tasks  found for this project'
-                ], 404);
-            }
+        $project = $this->taskService->getAllTasksByProject($id);
 
+        if (!$project['success']) {
             return response()->json([
-                'message' => 'Tasks retrieved successfully',
-                'tasks' => TaskResource::collection($project->tasks)
-            ], 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'message' => 'Project not found'
-            ], 404);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'An error occurred while processing your request',
-                'error' => config('app.debug') ? $e->getMessage() : null
-            ], 500);
+                'message' => $project['message']
+            ], $project['status']);
         }
+
+        return response()->json([
+            'message' => $project['message'],
+            'tasks' => TaskResource::collection($project['tasks'])
+        ], $project['status']);
     }
 }

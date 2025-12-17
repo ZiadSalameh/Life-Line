@@ -24,8 +24,6 @@ class StoreTaskStepRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'task_id' => 'required|exists:tasks,id',
-            // 'step' => 'required',
             'task_id' => 'required|exists:tasks,id',
             'step' => [
                 'required',

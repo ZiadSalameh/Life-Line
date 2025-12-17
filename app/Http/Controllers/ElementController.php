@@ -36,12 +36,12 @@ class ElementController extends Controller
 
     public function UpdateElement(UpdateElementRequest $request, $id)
     {
-            $validated = $request->validated();
-            $element = $this->elementService->updateElement($validated, $id);
-            return response()->json([
-                'message' => 'Element updated successfully',
-                'data' => $element
-            ], 200);
+        $validated = $request->validated();
+        $element = $this->elementService->updateElement($validated, $id);
+        return response()->json([
+            'message' => 'Element updated successfully',
+            'data' => $element
+        ], 200);
     }
 
 
@@ -59,18 +59,13 @@ class ElementController extends Controller
 
     public function DeleteElement($id)
     {
-        try {
-            $element = Element::findOrFail($id);
-            $element->delete();
-            return response()->json([
-                'message' => 'Element deleted successfully',
-                'data' => $element
-            ], 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'message' => 'Element not found',
-                'error' => $e->getMessage()
-            ], 404);
-        }
+        $element = $this->elementService->deleteElement($id);
+
+        return response()->json([
+            'message' => $element['message'],
+            'element' => $element['success']
+                ? new ElementResource($element['element'])
+                : null
+        ], $element['status']);
     }
 }

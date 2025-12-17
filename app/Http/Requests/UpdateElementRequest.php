@@ -26,5 +26,7 @@ class UpdateElementRequest extends FormRequest
             'element_name'=>'sometimes|string|unique:elements,element_name',
             'description'=>'sometimes|string'
         ];
-    }
+    }   
+
+    
 }

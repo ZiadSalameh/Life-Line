@@ -156,7 +156,7 @@ php artisan key:generate
 php artisan migrate --seed
 php artisan serve
 ```
-
+```bash
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
@@ -165,3 +165,4 @@ DB_USERNAME=root
 DB_PASSWORD=
 
 JWT_SECRET=your_jwt_secret_here
+```

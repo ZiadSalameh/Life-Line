@@ -1,71 +1,167 @@
-<<<<<<< HEAD
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
-
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-=======
 # Life-Line
-Laravel-Project
->>>>>>> 713d9820423133d998feaed794a543b12b6f5e20
+
+Life-Line is a RESTful API built with **Laravel 11** for managing **projects, meetings, tasks, and task steps** with role-based authentication and a clean service-layer architecture.  
+This project demonstrates a scalable backend structure suitable for real-world applications and portfolio presentation.
+
+---
+
+## Tech Stack
+
+-   PHP 8.2
+-   Laravel 11
+-   MySQL
+-   JWT Authentication
+-   RESTful API
+-   Service Layer Architecture
+-   Form Request Validation
+-   API Resources
+-   Middleware for role-based authorization
+
+---
+
+## Architecture
+
+The project follows a clean and scalable architecture:
+
+-   **Controllers**: Handle HTTP requests and responses.
+-   **Services**: Contain business logic (Service Layer pattern).
+-   **Requests**: Handle validation for create/update actions.
+-   **Resources**: Transform models to JSON responses.
+-   **Middleware**: Handle authentication and role-based authorization.
+
+### Example:
+
+# 1 - **GetByIdProject**
+
+### GET :  http://127.0.0.1:8000/api/GetByIdProject/1
+
+**Response**
+
+```json
+{
+    "message": "Project retrieved successfully",
+    "meeting": {
+        "id": 1,
+        "project_no": "20",
+        "project_name": "Charlie Schoen",
+        "start_date": "2000-07-18",
+        "end_date": "1996-02-10",
+        "real_start_date": "2009-04-30",
+        "real_end_date": "1979-10-01",
+        "created_at": "2025-12-15T18:09:42.000000Z",
+        "board_dee": {
+            "id": 4,
+            "board_no": 40
+        }
+    }
+}
+```
+
+# 2 - **Create Task**
+
+### POST : http://127.0.0.1:8000/api/AddTask/?task_name=task 1&project_id=11
+
+**Response**
+
+```json
+{
+    "task": {
+        "id": 23,
+        "task_name": "task 1",
+        "duration": null,
+        "responsible": null,
+        "description": null,
+        "start_date": null,
+        "end_date": null,
+        "real_start_date": null,
+        "real_end_date": null
+    },
+    "message": "task created successfully"
+}
+```
+
+---
+##  Authentication & Authorization
+
+- JWT-based authentication
+- Role-based authorization (Admin / User)
+- Protected routes using middleware
+
+### Authorization: Bearer {token}
+
+## Features
+
+-   User registration, login, logout
+-   Role-based access control (admin/user)
+-   Project management (CRUD)
+-   Meeting management (CRUD)
+-   Assign users to meetings
+-   Task management per project
+-   Task steps management per task
+-   Validation using Form Requests
+-   Clean API responses with Resource classes
+
+---
+
+## API Endpoints
+
+### Auth
+
+-   `POST /api/register` – Register a new user
+-   `POST /api/login` – Login user
+-   `POST /api/logout` – Logout user
+
+### Projects
+
+-   `GET /api/projects` – List all projects
+-   `POST /api/projects` – Create a project
+-   `PUT /api/projects/{id}` – Update a project
+-   `DELETE /api/projects/{id}` – Delete a project
+
+### Meetings
+
+-   `GET /api/meetings` – List all meetings
+-   `POST /api/meetings` – Create a meeting
+-   `PUT /api/meetings/{id}` – Update a meeting
+-   `DELETE /api/meetings/{id}` – Delete a meeting
+-   `POST /api/meetings/{id}/users` – Assign users to meeting
+-   `DELETE /api/meetings/{id}/users` – Remove users from meeting
+
+### Tasks
+
+-   `GET /api/projects/{id}/tasks` – List tasks by project
+-   `POST /api/tasks` – Create a task
+-   `PUT /api/tasks/{id}` – Update a task
+-   `DELETE /api/tasks/{id}` – Delete a task
+
+### Task Steps
+
+-   `GET /api/tasks/{id}/steps` – List task steps by task
+-   `POST /api/task-steps` – Create a task step
+-   `PUT /api/task-steps/{id}` – Update a task step
+-   `DELETE /api/task-steps/{id}` – Delete a task step
+
+---
+
+## Installation
+
+Clone the repository and set up locally:
+
+```bash
+git clone https://github.com/ZiadSalameh/Life-Line.git
+cd Life-Line
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve
+```
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=WrokProject
+DB_USERNAME=root
+DB_PASSWORD=
+
+JWT_SECRET=your_jwt_secret_here

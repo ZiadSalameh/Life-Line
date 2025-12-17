@@ -23,7 +23,7 @@ class UpdateElementRequest extends FormRequest
     {
         return [
 
-            'element_name'=>'sometimes|string',
+            'element_name'=>'sometimes|string|unique:elements,element_name',
             'description'=>'sometimes|string'
         ];
     }

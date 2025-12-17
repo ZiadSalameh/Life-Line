@@ -22,8 +22,7 @@ class StoreElementRequest extends FormRequest
     public function rules(): array
     {
         return [
-
-            'element_name' => 'required|string',
+            'element_name' => 'required|string|unique:elements,element_name',
             'description' => 'nullable|string'
         ];
     }
@@ -32,6 +31,7 @@ class StoreElementRequest extends FormRequest
     {
         return [
             'element_name.required' => 'The element name is required.',
+            'element_name.unique' => 'The element name must be unique.',
         ];
     }
 }

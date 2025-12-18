@@ -40,7 +40,7 @@ The project follows a clean and scalable architecture:
 ```json
 {
     "message": "Project retrieved successfully",
-    "meeting": {
+    "project": {
         "id": 1,
         "project_no": "20",
         "project_name": "Charlie Schoen",

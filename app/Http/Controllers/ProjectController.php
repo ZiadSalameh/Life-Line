@@ -53,7 +53,7 @@ class ProjectController extends Controller
         $project = $this->projectService->getProjectById($id);
         return response()->json([
             'message' => $project['message'],
-            'meeting' => $project['success']
+            'project' => $project['success']
                 ? new ProjectResource($project['project'])
                 : null
         ], $project['status']);

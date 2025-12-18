@@ -39,7 +39,7 @@ class ProjectController extends Controller
         $project = $this->projectService->UpdateProject($validatedData, $id);
         return response()->json([
             'message' => $project['message'],
-            'meeting' => $project['success']
+            'project' => $project['success']
                 ? new ProjectResource($project['project'])
                 : null
         ], $project['status']);

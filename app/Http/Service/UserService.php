@@ -2,24 +2,34 @@
 
 namespace App\Http\Service;
 
+
+use App\DTOs\UserDto\UserDto;
+use App\DTOs\UserDto\LoginDto;
+use App\Interfaces\User\UserRepositoryInterface as UserUserRepositoryInterface;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserService
 {
-    public function register(array $data): array
-    {
-        $user = User::create([
-            'first_name' => $data['first_name'],
-            'last_name' => $data['last_name'],
-            'bitrthdate' => $data['bitrthdate'] ?? null,
-            'ScinceGrade' => $data['ScinceGrade'] ?? null,
-            'role' => $data['role'] ?? 'user',
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-            'office_id' => $data['office_id'],
-        ]);
+    public function __construct(
+        private UserUserRepositoryInterface $userRepository
+    ) {}
 
+    public function register(UserDto $userDto)
+    {
+        $userDto = new UserDto(
+            first_name: $userDto->first_name,
+            last_name: $userDto->last_name,
+            email: $userDto->email,
+            password: Hash::make($userDto->password),
+            birthdate: $userDto->birthdate,
+            ScinceGrade: $userDto->ScinceGrade,
+            role: $userDto->role,
+            office_id: $userDto->office_id
+        );
+
+        $user = $this->userRepository->create($userDto);
         $token = JWTAuth::fromUser($user);
         return [
             'user' => $user,
@@ -29,21 +39,23 @@ class UserService
         ];
     }
 
-    public function login(array $data): array
+    public function login(LoginDto $loginDto)
     {
-        $credentials = [
-            'email' => $data['email'],
-            'password' => $data['password']
-        ];
-        if (!$token = JWTAuth::attempt($credentials)) {
+        $user = $this->userRepository->findByEmail($loginDto->email);
+
+        if (!$user || !Hash::check($loginDto->password, $user->password)) {
             return [
-                'message' => 'Invalid credentials'
+                'success' => false,
+                'message' => 'Invalid credentials',
             ];
         }
+
+        $token = JWTAuth::fromUser($user);
+
         return [
             'success' => true,
             'message' => 'User logged in successfully',
-            'user' => JWTAuth::user(),
+            'user' => $user,
             'token' => $token,
             'token_type' => 'bearer',
             'expires_in' => JWTAuth::factory()->getTTL() * 60

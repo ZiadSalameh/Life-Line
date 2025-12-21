@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Interfaces\User\UserRole;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class RegisterRequest extends FormRequest
 {
@@ -24,9 +26,10 @@ class RegisterRequest extends FormRequest
         return [
             'first_name' => 'required|string|max:150',
             'last_name' => 'nullable|string|max:150',
-            'bitrthdate' => 'nullable|date',
+            'birthdate' => 'nullable|date',
             'ScinceGrade' => 'nullable|string|max:150',
-            'role' => 'enum:admin,user|nullable',
+            // 'role' => 'enum:admin,user|nullable',
+            'role' => ['nullable', new Enum(UserRole::class)],
             'email' => 'required|string|email|unique:users,email',
             'password' => 'required|confirmed|string',
             'office_id' => 'required|exists:offices,id',

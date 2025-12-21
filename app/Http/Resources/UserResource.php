@@ -15,13 +15,13 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->first_name . " " . $this->last_name,
             'email' => $this->email,
-            'bitrthdate' => $this->bitrthdate,
+            'birthdate' => $this->birthdate,
             'ScinceGrade' => $this->ScinceGrade,
             'Created_at' => $this->created_at->format('Y-M-d'),
             'office' => $this->whenLoaded('office', function () {
                 return [
                     'office_id' => $this->office_user->office_id,
-                    'office_name' => $this->office_user->office->name  
+                    'office_name' => $this->office_user->office->name
                 ];
             })
 

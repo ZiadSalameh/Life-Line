@@ -11,4 +11,5 @@ interface UserRepositoryInterface
 {
     public function create(UserDto $userDto): User;
     public function findByEmail(string $email): ?User;
+    
 }

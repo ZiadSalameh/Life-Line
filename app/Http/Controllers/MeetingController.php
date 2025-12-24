@@ -2,22 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\DTOs\MeetingDTO\MeetingDto;
 use App\Http\Requests\StoreMeetingRequest;
 use App\Http\Requests\UpdateMeetingRequest;
-use App\Http\Resources\BoardDeeResource;
 use App\Http\Resources\MeetingResource;
 use App\Http\Service\MeetingService;
-use App\Models\BoardDee;
-use App\Models\Meeting;
-use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 
 class MeetingController extends Controller
 {
-    private MeetingService $meetingService;
-    public function __construct(MeetingService $meetingService)
+    public function __construct(private MeetingService $meetingService)
     {
         $this->meetingService = $meetingService;
     }
@@ -43,7 +39,12 @@ class MeetingController extends Controller
     public function AddMeeting(StoreMeetingRequest $request)
     {
         $validateDate = $request->validated();
-        $meeting = $this->meetingService->AddMeeting($validateDate);
+        $data = new MeetingDto(
+            meeting_no: $validateDate['meeting_no'],
+            description: $validateDate['description'],
+            DateTime: isset($validateDate['DateTime']) ? Carbon::parse($validateDate['DateTime']) : null,
+        );
+        $meeting = $this->meetingService->AddMeeting($data);
         return response()->json([
             'meeting' => new MeetingResource($meeting['meeting']),
             'message' => $meeting['message']
@@ -52,10 +53,13 @@ class MeetingController extends Controller
 
     public function UpdateMeeting(UpdateMeetingRequest $request, $id)
     {
-        $result = $this->meetingService->UpdateMeeting(
-            $request->validated(),
-            $id
+        $validateDate = $request->validated();
+        $meeting = new MeetingDto(
+            meeting_no: $validateDate['meeting_no'],
+            description: $validateDate['description'],
+            DateTime: isset($validateDate['DateTime']) ? Carbon::parse($validateDate['DateTime']) : null,
         );
+        $result = $this->meetingService->UpdateMeeting($meeting, $id);
         return response()->json([
             'message' => $result['message'],
             'meeting' => $result['success']
@@ -67,13 +71,11 @@ class MeetingController extends Controller
 
     public function DeleteMeeting($id)
     {
-        $meeting = $this->meetingService->DeleteMeeting($id);
+        $this->meetingService->DeleteMeeting($id);
         return response()->json([
-            'message' => $meeting['message'],
-            'meeting' => $meeting['success']
-                ? new MeetingResource($meeting['meeting'])
-                : null
-        ], $meeting['status']);
+            'success' => true,
+            'message' => 'Meeting deleted successfully'
+        ], 200);
     }
 
     public function addUser(Request $request, $meetingId)

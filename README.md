@@ -24,7 +24,7 @@ This project demonstrates a scalable backend structure suitable for real-world a
 The project follows a clean and scalable architecture:
 
 -   **Controllers**: Handle HTTP requests and responses.
--   **Services**: Contain business logic (Service Layer pattern).
+-   **Services**: Contain business logic (Service Layer pattern + Repository pattern(Under Update)).
 -   **Requests**: Handle validation for create/update actions.
 -   **Resources**: Transform models to JSON responses.
 -   **Middleware**: Handle authentication and role-based authorization.

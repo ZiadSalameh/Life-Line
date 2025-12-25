@@ -19,7 +19,6 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(UserUserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(MeetingRepositoryInterface::class, MeetingRepository::class);
-        $this->app->bind(MeetingRepositoryInterface::class, MeetingRepository::class);
         $this->app->bind(BoardRepositoryInterface::class, BoardDeeRepository::class);
     }
 

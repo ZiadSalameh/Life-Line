@@ -89,5 +89,18 @@ class MeetingService extends BaseService
         return $this->success([
             'meeting' => $meeting
         ], 'Users removed successfully', 200);
+
+
+        $currentUserIds = $meeting->users->pluck('id')->toArray();
+        $existingUserIds = array_intersect($userIds, $currentUserIds);
+
+
+        $meeting = Meeting::with('users')->find($meetingId);
+
+        if (!$meeting) {
+            return $this->error('Meeting not found', 404, [
+                'meeting' => null
+            ]);
+        }
     }
 }

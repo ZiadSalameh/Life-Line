@@ -2,69 +2,48 @@
 
 namespace App\Http\Service;
 
+use App\DTOs\BoardDtos\BoardDto;
+use App\Http\Resources\BoardDeeResource;
+use App\Interfaces\BoardDee\BoardRepositoryInterface;
 use App\Models\BoardDee;
 use App\Models\Meeting;
+use Illuminate\Support\Arr;
 
 class BoardDeeService extends BaseService
 {
+    public function __construct(private BoardRepositoryInterface $boardDeeRepository) {}
     public function getAllBoardDees()
     {
-        $boardDees = BoardDee::with('meeting')->get();
-        return $boardDees;
+        $boardDee = $this->boardDeeRepository->getall();
+        return $boardDee;
     }
 
     public function getBoardDeeById($id)
     {
-        $boardDee = BoardDee::with('meeting')->find($id);
-        if (!$boardDee) {
-            return $this->error('BoardDee not found', 404, [
-                'boardDee' => $boardDee
-            ]);
-        }
+        $boardDee = $this->boardDeeRepository->getone($id);
         return $this->success([
             'boardDee' => $boardDee
         ], 'BoardDee retrieved successfully', 200);
     }
 
-    public function AddBoardDee($data)
+    public function AddBoardDee(BoardDto $board): array
     {
-        $boardDee = BoardDee::create([
-            'board_no' => $data['board_no'],
-            'boar_dee_date' => $data['boar_dee_date'] ?? null,
-            'description' => $data['description'] ?? null,
-            'voted' => $data['voted'] ?? null,
-            'meeting_id' => $data['meeting_id']
-        ]);
-
+        $boardDee = $this->boardDeeRepository->create($board);
         return $this->success([
             'boardDee' => $boardDee
-        ], 'BoardDee updated successfully', 201);
+        ], 'BoardDee retrieved successfully', 200);
     }
 
-    public function UpdateBoardDee(array $data, $id)
+    public function UpdateBoardDee($id, BoardDto $board)
     {
-        $boardDee = BoardDee::find($id);
-        if (!$boardDee) {
-            return $this->error('BoardDee not found', 404, [
-                'boardDee' => $boardDee
-            ]);
-        }
-
-        $boardDee->update($data);
+        $boardDee = $this->boardDeeRepository->update($id, $board);
         return $this->success([
             'boardDee' => $boardDee
         ], 'BoardDee updated successfully', 200);
     }
-
     public function DeleteBoardDee($id)
     {
-        $boardDee = BoardDee::find($id);
-        if (!$boardDee) {
-            return $this->error('BoardDee not found', 404, [
-                'boardDee' => $boardDee
-            ]);
-        }
-        $boardDee->delete();
+        $boardDee = $this->boardDeeRepository->delete($id);
         return $this->success([
             'boardDee' => $boardDee
         ], 'BoardDee deleted successfully', 200);

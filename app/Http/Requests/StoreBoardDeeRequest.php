@@ -23,11 +23,11 @@ class StoreBoardDeeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'boar_dee_date' => 'nullable|date',
             'board_no' => 'required|integer|unique:board_dees,board_no',
-            // 'board_no' => ['required', Rule::unique('board_dees')->where('meeting_id', $this->input('meeting_id'))],
+            'meeting_id' => 'required|exists:meetings,id',
             'description' => 'nullable|string',
-            'voted' => 'nullable|string',
+            'voted' => 'nullable|boolean',
+            'boar_dee_date' => 'nullable|date',
             'meeting_id' => 'required|integer|exists:meetings,id'
         ];
     }

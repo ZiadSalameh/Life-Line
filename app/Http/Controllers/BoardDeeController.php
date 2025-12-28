@@ -7,7 +7,6 @@ use App\Http\Requests\StoreBoardDeeRequest;
 use App\Http\Requests\UpdateBoardDeeRequest;
 use App\Http\Resources\BoardDeeResource;
 use App\Http\Service\BoardDeeService;
-use App\Models\BoardDee;
 use Carbon\Carbon;
 
 class BoardDeeController extends Controller

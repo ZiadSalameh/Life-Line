@@ -73,7 +73,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         return response()->json([
-            'user' => $user,
+            'user' => $user
         ], 200);
     }
     public function getallusers()
